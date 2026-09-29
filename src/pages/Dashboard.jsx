@@ -168,9 +168,9 @@ export default function Dashboard() {
                           </span>
                         ))}
                       </div>
-                      <div className="emp-caption">
+                      {/* <div className="emp-caption">
                         {s.total ? `${s.total} stations assigned` : 'No stations assigned'}
-                      </div>
+                      </div> */}
                     </article>
                   )
                 })}
