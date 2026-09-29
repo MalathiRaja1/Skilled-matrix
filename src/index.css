@@ -330,7 +330,7 @@ th, td {
 
 /* ---------- Employee popup (skill matrix like the Eaton sheet) ---------- */
 .emp-modal {
-  background: #fff; width: min(1000px, 94vw); max-height: 90vh; overflow: auto;
+  background: #fff; width: min(780px, 94vw); max-height: 90vh; overflow: auto;
   border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
 }
 .emp-modal-banner {
@@ -414,3 +414,73 @@ th, td {
   .sheet input::-webkit-calendar-picker-indicator { display: none; }
   .sheet input[type=number]::-webkit-inner-spin-button { display: none; }
 }
+
+/* ===== Replace the old ".login-screen / .login-card" rules with these ===== */
+.login-page { min-height: 100vh; display: grid; grid-template-columns: 1.15fr 1fr; }
+
+.login-hero {
+  position: relative; display: flex; align-items: flex-end; padding: 56px;
+  color: #fff;
+  /* Save your Eaton banner image as  public/login-bg.jpg  */
+  background:
+    linear-gradient(160deg, rgba(0,32,72,.78) 0%, rgba(0,94,184,.45) 100%),
+    url('/login-bg.jpg') center / cover no-repeat,
+    #0b2a4a;
+}
+.login-hero {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cg stroke='%23ffffff' stroke-opacity='.18' fill='%23ffffff'%3E%3Cpath d='M30 60L200 140L380 40M200 140L120 320L340 300L380 40M120 320L30 60' fill='none'/%3E%3Ccircle cx='30' cy='60' r='4' fill-opacity='.5'/%3E%3Ccircle cx='200' cy='140' r='5' fill-opacity='.5'/%3E%3Ccircle cx='380' cy='40' r='4' fill-opacity='.5'/%3E%3Ccircle cx='120' cy='320' r='4' fill-opacity='.5'/%3E%3Ccircle cx='340' cy='300' r='5' fill-opacity='.5'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(160deg, #002448 0%, #005eb8 100%);
+}
+.login-hero-text h2 { margin: 0 0 10px; font-size: 2.3rem; font-weight: 600; line-height: 1.15; max-width: 14ch; }
+.login-hero-text p  { margin: 0; font-size: 1rem; opacity: .9; max-width: 38ch; }
+
+.login-panel { display: flex; align-items: center; justify-content: center; padding: 32px; background: #fff; }
+.login-box { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 16px; }
+.login-logo img { height: 44px; display: block; }
+.login-logo span { font-size: 1.8rem; font-weight: 800; color: #005eb8; letter-spacing: .04em; }
+.login-box h1 { margin: 18px 0 0; font-size: 1.5rem; }
+.login-sub { margin: -8px 0 6px; color: #5b665d; font-size: .9rem; }
+
+.login-box label { display: flex; flex-direction: column; gap: 6px; font-size: .85rem; color: #3b463f; }
+.login-box input {
+  width: 100%; padding: 11px 12px; font-size: .95rem;
+  border: 1px solid #cfd6cf; border-radius: 4px; background: #fff;
+}
+.login-box input:focus { outline: 2px solid #005eb8; outline-offset: 0; border-color: #005eb8; }
+.login-btn { background: #005eb8; padding: 12px; font-size: .95rem; border-radius: 4px; margin-top: 4px; }
+.login-btn:hover { background: #004a92; }
+.login-btn:disabled { opacity: .6; cursor: default; }
+
+@media (max-width: 800px) {
+  .login-page { grid-template-columns: 1fr; }
+  .login-hero { min-height: 180px; padding: 24px; }
+  .login-hero-text h2 { font-size: 1.4rem; }
+  .login-hero-text p { display: none; }
+}
+
+/* ===== Employee popup: area cards (station list) ===== */
+.area-card {
+  margin-top: 18px; border: 1px solid #e3e6e3; border-radius: 8px;
+  padding: 14px 18px 6px; background: #fff;
+}
+.area-title { margin: 0 0 8px; font-size: .82rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #3b463f; }
+.area-bar { height: 4px; background: #5c9a24; margin: 0 -18px 4px; }
+.area-row {
+  display: grid; grid-template-columns: 200px 1fr; gap: 12px; align-items: center;
+  padding: 10px 0; border-top: 1px solid #edf0ed;
+}
+.area-bar + .area-row { border-top: none; }
+.area-stage { display: flex; align-items: center; gap: 10px; font-size: .9rem; color: #2a332d; }
+.stage-badge {
+  width: 24px; height: 24px; border-radius: 4px; display: inline-flex;
+  align-items: center; justify-content: center; font-weight: 700; font-size: .8rem;
+  background: var(--stage-bg); border: 1px solid var(--stage-line);
+}
+.area-stations { display: flex; flex-wrap: wrap; gap: 8px; }
+.station-chip {
+  background: var(--stage-bg); border: 1px solid var(--stage-line);
+  border-radius: 6px; padding: 5px 12px; font-size: .86rem; color: #1f2a22;
+}
+.area-none { color: #7b857e; font-size: .9rem; }
+@media (max-width: 560px) { .area-row { grid-template-columns: 1fr; gap: 6px; } }

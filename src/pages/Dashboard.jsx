@@ -151,11 +151,11 @@ export default function Dashboard() {
                       </button>
                       <h3 title={e.empName}>{e.empName}</h3>
                       <div className="emp-code">{e.empId}</div>
-
+{/* 
                       <div className="emp-progress">
                         <div className="emp-progress-fill" style={{ width: `${s.pct}%` }} />
                       </div>
-                      <div className="emp-pct">{s.pct}% completed</div>
+                      <div className="emp-pct">{s.pct}% completed</div> */}
 
                       <div className="emp-stages">
                         {['c', 'a', 'u', 't'].map((k) => (

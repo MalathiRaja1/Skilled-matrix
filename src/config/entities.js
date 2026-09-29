@@ -62,7 +62,7 @@ export const entities = {
       { key: 'empName', label: 'Emp Name' },
       { key: 'empCategory', label: 'Emp Category', type: 'select', choices: ['Eaton', 'Contractor'] },
       { key: 'photo', label: 'Photo', type: 'photo' },
-      { key: 'phoneNo', label: 'Phone No' },
+      { key: 'phoneNo', label: 'Phone No' , type: 'phone', maxLength: 10},
       { key: 'deptCode', label: 'Department', type: 'select', optionsEndpoint: 'departments', optionValue: 'deptCode', optionLabel: 'deptName' }
     ]
   },
