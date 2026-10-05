@@ -185,8 +185,11 @@ export default function MasterCrudPage({ config }) {
     }
   }
 
-  const exportRows = rows.map((row) => Object.fromEntries(columns.map((c) => [c.key, cellText(c, row)])))
-
+const exportRows = rows.map((row) =>
+  Object.fromEntries(
+    columns.map((c) => [c.key, c.type === 'photo' ? row[c.key] || '' : cellText(c, row)])
+  )
+)
   return (
 <div className="master-form-card">
   <div className="master-form-title">
@@ -422,28 +425,19 @@ export default function MasterCrudPage({ config }) {
                         String(row[c.key] ?? '')}
                     </td>
                   ))}
-                  <td className="row-actions">
-
-  <button
-    type="button"
-    className="action-btn edit-btn"
-    onClick={() => tryEdit(row)}
-    title="Edit"
-  >
-    <span className="action-icon">✎</span>
-    <span>Edit</span>
-  </button>
-
-  <button
-    type="button"
-    className="action-btn delete-btn"
-    onClick={() => remove(row[idField])}
-    title="Delete"
-  >
-    <span className="action-icon">🗑</span>
-    <span>Delete</span>
-  </button>
-
+            <td>
+  <div className="row-actions">
+    <button type="button" className="icon-btn edit" title="Edit" onClick={() => tryEdit(row)}>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+      </svg>
+    </button>
+    <button type="button" className="icon-btn delete" title="Delete" onClick={() => remove(row[idField])}>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 6h18" /><path d="M8 6V4h8v2" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6M14 11v6" />
+      </svg>
+    </button>
+  </div>
 </td>
                 </tr>
               ))}

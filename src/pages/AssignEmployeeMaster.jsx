@@ -284,10 +284,10 @@ export default function AssignEmployeeMaster() {
           { key: 'emp', label: 'Employee' },
           { key: 'area', label: 'Area' },
           { key: 'station', label: 'Work Station' },
-          { key: 't', label: 'T' },
-          { key: 'u', label: 'U' },
-          { key: 'a', label: 'A' },
-          { key: 'c', label: 'C' }
+          { key: 't', label: 'T (Training plan)' },
+          { key: 'u', label: 'U (Under training)' },
+          { key: 'a', label: 'A (Authorised)' },
+          { key: 'c', label: 'C (Competent to train others)' }
         ]}
         rows={rows.map((r) => ({
           emp: `${r.empId} — ${r.employee?.empName ?? ''}`,

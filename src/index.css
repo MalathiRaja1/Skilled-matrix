@@ -2743,3 +2743,314 @@ th, td {
   background-position: center 100px;   /* 40px gap above the image */
   background-color: #06214a;
 }
+
+/* =========================================================
+   SIDEBAR: collapsible groups with colourful animation
+   ========================================================= */
+
+/* Group heading button */
+.sidebar .nav-group-btn {
+  position: relative;
+  width: 100%;
+  margin-top: 10px;
+  padding: 9px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  color: #cfd6cd;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background .2s, color .2s;
+}
+
+.sidebar .nav-group-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+
+/* Colourful bar under the heading (animated rainbow) */
+.sidebar .nav-group-btn::after {
+  content: '';
+  position: absolute;
+  left: 10px; right: 10px; bottom: 0;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg,
+    #e05a5a, #e0a020, #3aa573, #4a90d9, #8a63d2, #e05a5a);
+  background-size: 200% 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .35s ease;
+}
+
+.sidebar .nav-group.open .nav-group-btn {
+  color: #fff;
+  background: rgba(255,255,255,0.08);
+}
+
+.sidebar .nav-group.open .nav-group-btn::after {
+  transform: scaleX(1);
+  animation: rainbow-slide 2s linear infinite;
+}
+
+@keyframes rainbow-slide {
+  to { background-position: 200% 0; }
+}
+
+/* Click flash */
+.sidebar .nav-group-btn:active {
+  animation: click-pop .25s ease;
+}
+
+@keyframes click-pop {
+  0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(74,144,217,.7); }
+  50%  { transform: scale(.97);  box-shadow: 0 0 0 8px rgba(138,99,210,.0); }
+  100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(58,165,115,0); }
+}
+
+/* Arrow */
+.sidebar .nav-chevron {
+  transition: transform .3s ease;
+  font-size: 0.85rem;
+}
+.sidebar .nav-group.open .nav-chevron { transform: rotate(180deg); }
+
+/* Smooth expand / collapse */
+.sidebar .nav-group-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .35s ease;
+}
+.sidebar .nav-group.open .nav-group-body { grid-template-rows: 1fr; }
+.sidebar .nav-group-inner {
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Sub links: slide in one by one with a coloured left edge */
+.sidebar .nav-sub {
+  margin-left: 8px;
+  padding: 8px 10px;
+  border-left: 3px solid transparent;
+  opacity: 0;
+  transform: translateX(-14px);
+}
+
+.sidebar .nav-group.open .nav-sub {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity .3s ease, transform .3s ease, background .15s;
+  transition-delay: calc(var(--i) * 70ms);
+  animation: sub-glow .9s ease calc(var(--i) * 70ms) 1;
+}
+
+.sidebar .nav-sub:nth-child(5n+1) { --c: #e05a5a; }
+.sidebar .nav-sub:nth-child(5n+2) { --c: #e0a020; }
+.sidebar .nav-sub:nth-child(5n+3) { --c: #3aa573; }
+.sidebar .nav-sub:nth-child(5n+4) { --c: #4a90d9; }
+.sidebar .nav-sub:nth-child(5n)   { --c: #8a63d2; }
+
+.sidebar .nav-sub:hover,
+.sidebar .nav-sub.active {
+  border-left-color: var(--c);
+}
+
+@keyframes sub-glow {
+  0%   { background: color-mix(in srgb, var(--c) 45%, transparent); }
+  100% { background: transparent; }
+}
+
+/* =========================================================
+   LOGOUT BUTTON - highlighted in a different colour
+   ========================================================= */
+.sidebar .logout {
+  background: linear-gradient(135deg, #e5484d, #c62a2f);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(229, 72, 77, 0.35);
+  transition: transform .15s, box-shadow .15s, background .15s;
+}
+
+.sidebar .logout:hover {
+  background: linear-gradient(135deg, #f05a5f, #d1333a);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(229, 72, 77, 0.5);
+}
+/* =========================================================
+   MASTER FORM: every field the same size, neat and aligned
+   ========================================================= */
+.master-form { padding: 22px 26px 18px; }
+
+.master-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 30px;
+  align-items: center;
+}
+
+/* label column fixed, control column fills the rest -> all fields equal */
+.master-field {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.master-field-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #2b3a47;
+  white-space: nowrap;
+}
+
+.master-field-control {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.master-field-control input[type="text"],
+.master-field-control input[type="date"],
+.master-field-control select {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #c8d1da;
+  border-radius: 8px;
+  background: #fff;
+  color: #172b3a;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.master-field-control input:focus,
+.master-field-control select:focus {
+  border-color: #005eb8;
+  box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.12);
+}
+
+.master-field-control input:disabled { background: #eef2f6; cursor: not-allowed; }
+.master-field-control input[type="checkbox"] { width: 18px; height: 18px; }
+
+/* photo: small preview + file box, same height as other fields */
+.master-photo-field { display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0; }
+
+.master-photo-preview {
+  width: 40px !important;
+  height: 40px !important;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #c8d1da;
+}
+
+.master-photo-field input[type="file"] {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  padding: 6px 8px;
+  border: 1px solid #c8d1da;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.8rem;
+}
+
+.master-photo-field input[type="file"]::file-selector-button {
+  height: 26px;
+  margin-right: 8px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 6px;
+  background: #e8eef6;
+  color: #005eb8;
+  font-weight: 600;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+/* Save / Clear: small and neat */
+.master-form-actions { gap: 8px; margin-top: 18px; }
+
+.master-save-btn,
+.master-clear-btn {
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+@media (max-width: 1100px) { .master-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px)  {
+  .master-fields { grid-template-columns: 1fr; }
+  .master-field  { grid-template-columns: 1fr; gap: 5px; }
+}
+
+/* =========================================================
+   EXPORT BAR: icon-only buttons
+   ========================================================= */
+.export-bar { gap: 8px; margin: 0 0 14px; }
+
+.export-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+  transition: transform .12s, box-shadow .12s;
+}
+.export-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,.2); }
+
+/* =========================================================
+   GRID: small icon-only Edit / Delete
+   ========================================================= */
+.table-wrap table th:last-child,
+.table-wrap table td:last-child { width: 90px; text-align: center; }
+
+.row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* .row-actions prefix beats the old ".row-actions button" rule */
+.row-actions .icon-btn {
+  width: 30px;
+  height: 30px;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  transition: transform .12s, box-shadow .12s, background .12s;
+}
+.row-actions .icon-btn:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,.2); }
+.row-actions .icon-btn.edit   { background: #f0a500; }
+.row-actions .icon-btn.edit:hover   { background: #d99100; }
+.row-actions .icon-btn.delete { background: #d64541; }
+.row-actions .icon-btn.delete:hover { background: #bd332f; }
