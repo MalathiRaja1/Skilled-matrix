@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import api from '../api/client'
-import { deleteWithPassword, errorMessage } from '../api/helpers'
+import { confirmEditPassword, deleteWithPassword, errorMessage } from '../api/helpers'
 import StageCell from '../components/StageCell'
+import ExportBar from '../components/ExportBar'
+import Loader from '../components/Loader'
 
 const today = () => {
   const d = new Date()
@@ -76,6 +78,17 @@ export default function AssignEmployeeMaster() {
     setForm(blank)
   }
 
+  // Edit is password-locked: ask first, only load the row into the form if it checks out.
+  const tryEdit = async (row) => {
+    setError('')
+    try {
+      const ok = await confirmEditPassword()
+      if (ok) startEdit(row)
+    } catch (err) {
+      setError(errorMessage(err, 'Incorrect password.'))
+    }
+  }
+
   const startEdit = (row) => {
     setEditingId(row.id)
     setError('')
@@ -137,7 +150,7 @@ export default function AssignEmployeeMaster() {
       <form className="card" onSubmit={submit}>
         <div className="form-grid">
           <label>
-            Employee
+            Employee<span className="required-star">*</span>
             <select value={form.empId} onChange={(e) => change({ empId: e.target.value })}>
               <option value="">-- Select --</option>
               {employees.map((e) => (
@@ -146,7 +159,7 @@ export default function AssignEmployeeMaster() {
             </select>
           </label>
           <label>
-            Area
+            Area<span className="required-star">*</span>
             <select
               value={form.areaCode}
               onChange={(e) => change({ areaCode: e.target.value, workStationCode: '' })}
@@ -158,7 +171,7 @@ export default function AssignEmployeeMaster() {
             </select>
           </label>
           <label>
-            Work Station
+            Work Station<span className="required-star">*</span>
             <select
               value={form.workStationCode}
               onChange={(e) => change({ workStationCode: e.target.value })}
@@ -265,9 +278,31 @@ export default function AssignEmployeeMaster() {
         {error && <p className="error" style={{ marginTop: 10 }}>{error}</p>}
       </form>
 
+      <ExportBar
+        title="Assign Employee Master"
+        columns={[
+          { key: 'emp', label: 'Employee' },
+          { key: 'area', label: 'Area' },
+          { key: 'station', label: 'Work Station' },
+          { key: 't', label: 'T' },
+          { key: 'u', label: 'U' },
+          { key: 'a', label: 'A' },
+          { key: 'c', label: 'C' }
+        ]}
+        rows={rows.map((r) => ({
+          emp: `${r.empId} — ${r.employee?.empName ?? ''}`,
+          area: r.area?.areaName ?? r.areaCode,
+          station: r.workStation?.workStationName ?? r.workStationCode,
+          t: r.t ? 'Yes' : 'No',
+          u: r.u ? 'Yes' : 'No',
+          a: r.a ? 'Yes' : 'No',
+          c: r.c ? 'Yes' : 'No'
+        }))}
+      />
+
       <div className="card table-wrap">
         {loading ? (
-          <p>Loading…</p>
+          <Loader />
         ) : rows.length === 0 ? (
           <p>No assignments yet — add the first one above.</p>
         ) : (
@@ -289,7 +324,7 @@ export default function AssignEmployeeMaster() {
                   <td><StageCell stage="a" checked={r.a} start={r.aStartDate} /></td>
                   <td><StageCell stage="c" checked={r.c} /></td>
                   <td className="row-actions">
-                    <button onClick={() => startEdit(r)}>Edit</button>
+                    <button onClick={() => tryEdit(r)}>Edit</button>
                     <button onClick={() => remove(r.id)}>Delete</button>
                   </td>
                 </tr>

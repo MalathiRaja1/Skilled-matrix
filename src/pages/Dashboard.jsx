@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../api/client'
 import EmployeeSkillModal from '../components/EmployeeSkillModal'
+import DepartmentStatusPanel from '../components/DepartmentStatusPanel'
+import Loader from '../components/Loader'
 import { summarize } from '../components/stageUtils'
 
 const initials = (name = '') =>
@@ -126,57 +128,53 @@ export default function Dashboard() {
       <main className="dash-main">
         {error && <p className="error">{error}</p>}
         {loading ? (
-          <p>Loading…</p>
+          <Loader label="Loading dashboard…" />
         ) : (
-          <>
-            <p className="dash-summary">
-              Showing {visible.length} of {employees.length} employees · click a photo for full details
-            </p>
+          <div className="dash-body">
+            <DepartmentStatusPanel />
 
-            {visible.length === 0 ? (
-              <p>No employees found.</p>
-            ) : (
-              <div className="emp-grid">
-                {visible.map((e) => {
-                  const s = summaries[e.empId] || EMPTY
-                  return (
-                    <article className="emp-card" key={e.empId}>
-                      <button
-                        type="button"
-                        className="stamp stamp-btn"
-                        onClick={() => setSelected(e)}
-                        title="View stations and areas"
-                      >
-                        {e.photo ? <img src={e.photo} alt="" /> : <span>{initials(e.empName)}</span>}
-                      </button>
-                      <h3 title={e.empName}>{e.empName}</h3>
-                      <div className="emp-code">{e.empId}</div>
-{/* 
-                      <div className="emp-progress">
-                        <div className="emp-progress-fill" style={{ width: `${s.pct}%` }} />
-                      </div>
-                      <div className="emp-pct">{s.pct}% completed</div> */}
+            <div className="dash-body-main">
+              <p className="dash-summary">
+                Showing {visible.length} of {employees.length} employees · click a photo for full details
+              </p>
 
-                      <div className="emp-stages">
-                        {['c', 'a', 'u', 't'].map((k) => (
-                          <span
-                            key={k}
-                            className={`stage-chip-sm stage-${k}`}
-                            title={`${s[k]} station(s) at stage ${k.toUpperCase()}`}
-                          >
-                            <strong>{k.toUpperCase()}</strong> {s[k]}
-                          </span>
-                        ))}
-                      </div>
-                      {/* <div className="emp-caption">
-                        {s.total ? `${s.total} stations assigned` : 'No stations assigned'}
-                      </div> */}
-                    </article>
-                  )
-                })}
-              </div>
-            )}
-          </>
+              {visible.length === 0 ? (
+                <p>No employees found.</p>
+              ) : (
+                <div className="emp-grid">
+                  {visible.map((e) => {
+                    const s = summaries[e.empId] || EMPTY
+                    return (
+                      <article className="emp-card" key={e.empId}>
+                        <button
+                          type="button"
+                          className="stamp stamp-btn"
+                          onClick={() => setSelected(e)}
+                          title="View stations and areas"
+                        >
+                          {e.photo ? <img src={e.photo} alt="" /> : <span>{initials(e.empName)}</span>}
+                        </button>
+                        <h3 title={e.empName}>{e.empName}</h3>
+                        <div className="emp-code">{e.empId}</div>
+
+                        <div className="emp-stages">
+                          {['c', 'a', 'u', 't'].map((k) => (
+                            <span
+                              key={k}
+                              className={`stage-chip-sm stage-${k}`}
+                              title={`${s[k]} station(s) at stage ${k.toUpperCase()}`}
+                            >
+                              <strong>{k.toUpperCase()}</strong> {s[k]}
+                            </span>
+                          ))}
+                        </div>
+                      </article>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
         )}
       </main>
 

@@ -12,6 +12,13 @@ export function stationsFor(assignments) {
   return [...best.values()]
 }
 
+// An employee's overall stage: the furthest any single station has taken them.
+// Returns null if they have no assignments yet.
+export function employeeStage(assignments) {
+  const rank = assignments.reduce((max, r) => Math.max(max, stageRank(r)), 0)
+  return RANK_LETTER[rank] ?? null
+}
+
 // How many stations sit at each stage, and the % fully completed (C only).
 export function summarize(assignments) {
   const stations = stationsFor(assignments)

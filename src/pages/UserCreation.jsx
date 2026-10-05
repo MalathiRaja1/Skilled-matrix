@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import api from '../api/client'
 import { deleteWithPassword, errorMessage, getWithPassword } from '../api/helpers'
+import ExportBar from '../components/ExportBar'
+import Loader from '../components/Loader'
 
-const blank = { deptCode: '', userName: '', password: '', confirmPassword: '' }
+const blank = { deptCode: '', userName: '', password: '', confirmPassword: '', status: 'Active' }
 
 export default function UserCreation() {
   const [departments, setDepartments] = useState([])
@@ -11,11 +13,13 @@ export default function UserCreation() {
   const [revealed, setRevealed] = useState({}) // user id -> password text (after "Show")
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [loading, setLoading] = useState(true)
 
   const loadUsers = () =>
     api.get('/auth/users')
       .then((res) => setUsers(res.data))
       .catch(() => setError('Could not load users.'))
+      .finally(() => setLoading(false))
 
   useEffect(() => {
     api.get('/departments').then((res) => setDepartments(res.data))
@@ -29,7 +33,9 @@ export default function UserCreation() {
 
     if (!form.deptCode) return setError('Select a department.')
     if (!form.userName.trim()) return setError('Enter a username.')
+    if (!form.password) return setError('Enter a password.')
     if (form.password !== form.confirmPassword) return setError('Passwords do not match.')
+    if (!form.status) return setError('Select a status.')
 
     try {
       await api.post('/auth/register', form)
@@ -78,7 +84,7 @@ export default function UserCreation() {
 
       <form className="card form-grid" onSubmit={submit}>
         <label>
-          Department
+          Department<span className="required-star">*</span>
           <select
             value={form.deptCode}
             onChange={(e) => setForm({ ...form, deptCode: e.target.value })}
@@ -93,7 +99,7 @@ export default function UserCreation() {
         </label>
 
         <label>
-          Username
+          Username<span className="required-star">*</span>
           <input
             type="text"
             value={form.userName}
@@ -102,7 +108,7 @@ export default function UserCreation() {
         </label>
 
         <label>
-          Password
+          Password<span className="required-star">*</span>
           <input
             type="password"
             value={form.password}
@@ -111,12 +117,23 @@ export default function UserCreation() {
         </label>
 
         <label>
-          Confirm Password
+          Confirm Password<span className="required-star">*</span>
           <input
             type="password"
             value={form.confirmPassword}
             onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
           />
+        </label>
+
+        <label>
+          Status<span className="required-star">*</span>
+          <select
+            value={form.status}
+            onChange={(e) => setForm({ ...form, status: e.target.value })}
+          >
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
         </label>
 
         <div className="form-actions">
@@ -127,15 +144,28 @@ export default function UserCreation() {
         {success && <p className="success">{success}</p>}
       </form>
 
+      <ExportBar
+        title="Users"
+        columns={[
+          { key: 'dept', label: 'Department' },
+          { key: 'userName', label: 'Username' },
+          { key: 'status', label: 'Status' }
+        ]}
+        rows={users.map((u) => ({ dept: `${u.deptCode} — ${u.deptName}`, userName: u.userName, status: u.status }))}
+      />
+
       <div className="card">
-        {users.length === 0 ? (
-          <p>No users yet.</p>
+        {loading ? (
+          <Loader />
+        ) : users.length === 0 ? (
+          <p>No active users.</p>
         ) : (
           <table>
             <thead>
               <tr>
                 <th>Department</th>
                 <th>Username</th>
+                <th>Status</th>
                 <th>Password</th>
                 <th></th>
               </tr>
@@ -145,6 +175,7 @@ export default function UserCreation() {
                 <tr key={u.id}>
                   <td>{u.deptCode} — {u.deptName}</td>
                   <td>{u.userName}</td>
+                  <td>{u.status}</td>
                   <td>
                     {revealed[u.id] !== undefined ? (
                       <>

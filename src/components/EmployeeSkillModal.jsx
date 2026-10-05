@@ -40,7 +40,6 @@ const STAGES = [
 export default function EmployeeSkillModal({ employee, assignments, onClose }) {
   const [logoOk, setLogoOk] = useState(true)
   const s = useMemo(() => summarize(assignments), [assignments])
-  if (assignments[0]) console.log('assignment row sample:', assignments[0]) // remove later
 
   // Group: area -> stage -> [station names]
   const areas = useMemo(() => {

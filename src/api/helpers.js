@@ -64,6 +64,20 @@ export async function deleteWithPassword(path) {
   return true
 }
 
+// Asks for the admin password before allowing an edit, verified against the backend
+// (same password as delete). Returns true to proceed, false if cancelled.
+// Throws on a wrong password.
+export async function confirmEditPassword() {
+  const password = await askPassword({
+    title: 'Confirm edit',
+    message: 'Enter the admin password to edit this record.',
+    confirmLabel: 'Edit'
+  })
+  if (password === null) return false
+  await api.post('/auth/verify-password', {}, { headers: { 'X-Delete-Password': password } })
+  return true
+}
+
 // Same, for a protected GET (used to view a user's password). Returns null if cancelled.
 export async function getWithPassword(path, prompt) {
   const password = await askPassword(prompt)
