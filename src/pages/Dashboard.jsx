@@ -11,20 +11,28 @@ const initials = (name = '') =>
 
 const EMPTY = { c: 0, a: 0, u: 0, t: 0, none: 0, total: 0, pct: 0 }
 
+const EyeIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+)
+
 export default function Dashboard() {
   const [employees, setEmployees] = useState([])
   const [departments, setDepartments] = useState([])
   const [assignments, setAssignments] = useState([])
-  const [active, setActive] = useState('ALL') // 'ALL' or a deptCode
+  const [active, setActive] = useState('ALL')
   const [query, setQuery] = useState('')
-  const [selected, setSelected] = useState(null) // employee whose popup is open
+  const [selected, setSelected] = useState(null)
+  const [showOverview, setShowOverview] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [logoOk, setLogoOk] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Load each list separately so one failing request doesn't blank the whole dashboard
     Promise.allSettled([api.get('/employees'), api.get('/departments'), api.get('/assignemployees')])
       .then(([e, d, a]) => {
         if (e.status === 'fulfilled') setEmployees(e.value.data)
@@ -39,26 +47,19 @@ export default function Dashboard() {
 
   const counts = useMemo(() => {
     const m = {}
-    employees.forEach((e) => {
-      m[e.deptCode] = (m[e.deptCode] || 0) + 1
-    })
+    employees.forEach((e) => { m[e.deptCode] = (m[e.deptCode] || 0) + 1 })
     return m
   }, [employees])
 
-  // Assignments grouped by employee, plus the per-stage station counts for each
   const byEmp = useMemo(() => {
     const m = {}
-    assignments.forEach((a) => {
-      ;(m[a.empId] ??= []).push(a)
-    })
+    assignments.forEach((a) => { ;(m[a.empId] ??= []).push(a) })
     return m
   }, [assignments])
 
   const summaries = useMemo(() => {
     const out = {}
-    Object.entries(byEmp).forEach(([id, rows]) => {
-      out[id] = summarize(rows)
-    })
+    Object.entries(byEmp).forEach(([id, rows]) => { out[id] = summarize(rows) })
     return out
   }, [byEmp])
 
@@ -88,8 +89,8 @@ export default function Dashboard() {
             />
           </div>
           <div className="dash-topbar-right">
-            <Link to="/masters/employee">Manage</Link>
-            <button onClick={logout}>Log out</button>
+            <Link to="/masters/employee" className="top-btn manage">⚙ Manage</Link>
+            <button type="button" className="top-btn logout" onClick={logout}>Log out</button>
           </div>
         </div>
       </div>
@@ -103,27 +104,32 @@ export default function Dashboard() {
               <span>Skill Matrix</span>
             )}
           </div>
-
-          <nav className="dash-nav">
-            <button
-              className={active === 'ALL' ? 'active' : ''}
-              onClick={() => setActive('ALL')}
-            >
-              All<span className="dash-count">{employees.length}</span>
-            </button>
-            {departments.map((d) => (
-              <button
-                key={d.deptCode}
-                className={active === d.deptCode ? 'active' : ''}
-                onClick={() => setActive(d.deptCode)}
-              >
-                {d.deptName}
-                <span className="dash-count">{counts[d.deptCode] || 0}</span>
-              </button>
-            ))}
-          </nav>
         </div>
       </header>
+
+      {/* Department buttons on their own line */}
+      <div className="dash-filterbar">
+        <div className="dash-filterbar-inner">
+          <button
+            type="button"
+            className={`dash-pill ${active === 'ALL' ? 'active' : ''}`}
+            onClick={() => setActive('ALL')}
+          >
+            All<span className="dash-count">{employees.length}</span>
+          </button>
+          {departments.map((d) => (
+            <button
+              type="button"
+              key={d.deptCode}
+              className={`dash-pill ${active === d.deptCode ? 'active' : ''}`}
+              onClick={() => setActive(d.deptCode)}
+            >
+              {d.deptName}
+              <span className="dash-count">{counts[d.deptCode] || 0}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
       <main className="dash-main">
         {error && <p className="error">{error}</p>}
@@ -131,12 +137,20 @@ export default function Dashboard() {
           <Loader label="Loading dashboard…" />
         ) : (
           <div className="dash-body">
-            <DepartmentStatusPanel />
-
             <div className="dash-body-main">
-              <p className="dash-summary">
-                Showing {visible.length} of {employees.length} employees · click a photo for full details
-              </p>
+              <div className="dash-summary-row">
+                <p className="dash-summary">
+                  Showing {visible.length} of {employees.length} employees · click a photo for full details
+                </p>
+                <button
+                  type="button"
+                  className="eye-btn"
+                  title="View Department Overview"
+                  onClick={() => setShowOverview(true)}
+                >
+                  <EyeIcon />
+                </button>
+              </div>
 
               {visible.length === 0 ? (
                 <p>No employees found.</p>
@@ -156,7 +170,6 @@ export default function Dashboard() {
                         </button>
                         <h3 title={e.empName}>{e.empName}</h3>
                         <div className="emp-code">{e.empId}</div>
-
                         <div className="emp-stages">
                           {['c', 'a', 'u', 't'].map((k) => (
                             <span
@@ -177,6 +190,23 @@ export default function Dashboard() {
           </div>
         )}
       </main>
+
+      {/* Department Overview popup */}
+      {showOverview && (
+        <div className="modal-overlay" onClick={() => setShowOverview(false)}>
+          <div className="overview-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="overview-close"
+              onClick={() => setShowOverview(false)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <DepartmentStatusPanel />
+          </div>
+        </div>
+      )}
 
       {selected && (
         <EmployeeSkillModal

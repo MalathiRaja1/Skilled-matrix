@@ -2646,3 +2646,100 @@ th, td {
   border-radius: 5px;
   display: block;
 }
+
+/* ===== LOGIN: full image + single-line text at bottom ===== */
+.login-hero {
+  background-image: url('/login-bg.jpeg');   /* gradient removed */
+  background-size: contain;                  /* whole image, nothing cropped */
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-color: #06214a;                 /* fills space below the image */
+  align-items: flex-end;
+}
+
+.login-hero-text {
+  max-width: none;
+  margin-bottom: 0;
+}
+
+.login-hero-text h2 {
+  font-size: clamp(1.3rem, 2.4vw, 2.2rem);
+  white-space: nowrap;
+  margin: 0 0 6px;
+}
+
+.login-hero-text p {
+  max-width: none;
+  font-size: clamp(.75rem, 1.1vw, 1rem);
+  white-space: nowrap;
+}
+
+/* ===== Top bar buttons ===== */
+.dash-topbar-right { gap: 10px; }
+.dash-topbar-right .top-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 34px; padding: 0 14px; border-radius: 6px;
+  font-size: .84rem; font-weight: 600; text-decoration: none; cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.dash-topbar-right .top-btn.manage {
+  background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.55); color: #fff;
+}
+.dash-topbar-right .top-btn.manage:hover { background: rgba(255,255,255,.28); }
+.dash-topbar-right .top-btn.logout {
+  background: #fff; border: 1px solid #fff; color: #005eb8;
+}
+.dash-topbar-right .top-btn.logout:hover { background: #e8eef6; }
+
+/* ===== Department buttons on their own row ===== */
+.dash-filterbar { background: #fff; border-bottom: 1px solid #dfe3de; }
+.dash-filterbar-inner {
+  max-width: 1320px; margin: 0 auto; padding: 12px 24px;
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.dash-pill {
+  background: #eef1ee; color: #1c2530; border: 1px solid transparent;
+  border-radius: 999px; padding: 7px 16px; font-size: .88rem;
+}
+.dash-pill:hover { background: #e0e6e0; }
+.dash-pill.active { background: #005eb8; color: #fff; }
+.dash-pill .dash-count { background: rgba(0,94,184,.12); color: #005eb8; }
+.dash-pill.active .dash-count { background: rgba(255,255,255,.25); color: #fff; }
+
+/* ===== Summary row + eye button ===== */
+.dash-body { display: block; }               /* overview panel no longer sits beside the grid */
+.dash-summary-row { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; }
+.dash-summary-row .dash-summary { margin: 0; }
+.eye-btn {
+  width: 34px; height: 34px; padding: 0; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #fff; color: #005eb8; border: 1px solid #cbd3da;
+}
+.eye-btn:hover { background: #e8eef6; }
+
+/* ===== Department Overview popup (same look as before) ===== */
+.overview-modal { position: relative; width: min(380px, 92vw); max-height: 90vh; overflow: auto; }
+.overview-modal .dept-panel {
+  position: static; width: 100%; max-height: none; top: auto;
+}
+.overview-close {
+  position: absolute; top: 10px; right: 12px; z-index: 2;
+  background: transparent; color: #5b665d; font-size: 1.5rem; line-height: 1; padding: 0 8px;
+}
+.overview-close:hover { background: transparent; color: #172b3a; }
+
+.login-hero {
+  padding-bottom: 22px;   /* was 55px; smaller = text sits lower */
+}
+
+.login-hero-text {
+  margin-bottom: 0;
+}
+
+.login-hero {
+  background-image: url('/login-bg.jpeg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center 100px;   /* 40px gap above the image */
+  background-color: #06214a;
+}
