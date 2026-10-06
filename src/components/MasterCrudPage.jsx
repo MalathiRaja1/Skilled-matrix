@@ -342,11 +342,13 @@ const exportRows = rows.map((row) =>
                       : undefined
                   }
 
-                  placeholder={
-                    c.type === 'phone'
-                      ? `${c.maxLength || 10}-digit number`
-                      : undefined
-                  }
+                placeholder={
+  c.type === 'phone'
+    ? `${c.maxLength || 10}-digit number`
+    : c.type === 'date'
+      ? undefined
+      : c.placeholder || `Enter ${c.label.toLowerCase()}`
+}
 
                   value={form[c.key] ?? ''}
 

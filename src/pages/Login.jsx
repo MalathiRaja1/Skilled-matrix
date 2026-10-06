@@ -42,116 +42,39 @@ export default function Login() {
     <div className="login-page">
 
       {/* ================= LEFT HERO ================= */}
-      <section className="login-hero">
+     <section className="login-hero">
+  <div className="hero-overlay"></div>
 
-        <div className="hero-overlay"></div>
+  <div className="hero-top">
+    <div className="hero-brand">
+      {logoOk ? (
+        <img src="/logo.png" alt="Eaton" onError={() => setLogoOk(false)} />
+      ) : (
+        <div className="hero-eaton-text">EATON</div>
+      )}
+    </div>
+  </div>
 
-        {/* Top Eaton branding */}
-        <div className="hero-top">
+  <div className="hero-content">
+    <h1 className="hero-title">
+      Building Skills.<br />
+      <span className="accent">Driving Excellence.</span>
+    </h1>
 
-          <div className="hero-brand">
-            {logoOk ? (
-              <img
-                src="/logo.png"
-                alt="Eaton"
-                onError={() => setLogoOk(false)}
-              />
-            ) : (
-              <div className="hero-eaton-text">
-                EATON
-              </div>
-            )}
+    <p className="hero-tags">
+      Track Competencies <span className="dot">•</span>{" "}
+      Training Status <span className="dot">•</span>{" "}
+      Authorizations <span className="dot">•</span>{" "}
+      Certifications
+    </p>
+  </div>
 
-            <span>Powering Business Worldwide</span>
-          </div>
-
-          <div className="hero-language">
-            <span>🌐</span>
-            <span>English</span>
-            <span>⌄</span>
-          </div>
-
-        </div>
-
-        {/* Main hero content */}
-        <div className="hero-content">
-
-          <div className="hero-title">
-            <h1>
-              Building Skills.
-              <br />
-              <span>Driving Excellence.</span>
-            </h1>
-
-            <p className="hero-subtitle">
-              Track Competencies&nbsp; • &nbsp;Training Status&nbsp; •
-              &nbsp;Authorizations&nbsp; • &nbsp;Certifications
-            </p>
-
-            <div className="hero-line"></div>
-
-            <p className="hero-description">
-              Empower People. Enable Growth.
-              <br />
-              Build a Stronger Tomorrow.
-            </p>
-          </div>
-
-        </div>
-
-        {/* Employee image is the background */}
-        <div className="employee-caption">
-          <span>
-            Empowered People.
-            <br />
-            Building a Stronger Eaton.
-          </span>
-        </div>
-
-        {/* ================= BOTTOM VALUES ================= */}
-        <div className="login-values">
-
-          <div className="value-item">
-            <div className="value-icon">👥</div>
-            <div>
-              <strong>People Development</strong>
-              <span>Grow Together</span>
-            </div>
-          </div>
-
-          <div className="value-divider"></div>
-
-          <div className="value-item">
-            <div className="value-icon">⚙</div>
-            <div>
-              <strong>Operational Excellence</strong>
-              <span>Build Capability</span>
-            </div>
-          </div>
-
-          <div className="value-divider"></div>
-
-          <div className="value-item">
-            <div className="value-icon">🛡</div>
-            <div>
-              <strong>A Safer Workplace</strong>
-              <span>Skills for Safety</span>
-            </div>
-          </div>
-
-          <div className="value-divider"></div>
-
-          <div className="value-item">
-            <div className="value-icon">🌿</div>
-            <div>
-              <strong>Sustainable Growth</strong>
-              <span>A Stronger Tomorrow</span>
-            </div>
-          </div>
-
-        </div>
-
-      </section>
+  {/* Bottom-left, over the employee's shirt */}
+  <div className="tagline">
+    <strong>Empower People. Enable Growth.</strong>
+    <span>Build a Stronger Tomorrow.</span>
+  </div>
+</section>
 
       {/* ================= RIGHT LOGIN ================= */}
       <section className="login-panel">
@@ -336,7 +259,63 @@ export default function Login() {
         </div>
 
       </section>
+      {/* ================= BOTTOM-RIGHT VALUES BOX ================= */}
+      <div className="login-values">
 
+        <div className="value-item">
+          <div className="value-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="9" cy="8" r="3.2" />
+              <path d="M2.5 19c0-3.3 2.9-5.5 6.5-5.5s6.5 2.2 6.5 5.5z" />
+              <circle cx="17" cy="9" r="2.5" />
+              <path d="M16.5 13.6c2.9 0 5 1.8 5 4.4h-4.2c0-1.7-.4-3.2-.8-4.4z" />
+            </svg>
+          </div>
+          <div>
+            <strong>People Development</strong>
+            <span>Grow together</span>
+          </div>
+        </div>
+
+        <div className="value-item">
+          <div className="value-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="3.2" />
+              <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1" />
+            </svg>
+          </div>
+          <div>
+            <strong>Operational Excellence</strong>
+            <span>Build capability</span>
+          </div>
+        </div>
+
+        <div className="value-item">
+          <div className="value-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z" />
+              <path d="M8.5 12l2.5 2.5 4.5-5" />
+            </svg>
+          </div>
+          <div>
+            <strong>A Safer Workplace</strong>
+            <span>Skills for safety</span>
+          </div>
+        </div>
+
+        <div className="value-item">
+          <div className="value-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 4C11 4 5 8.5 5 14c0 1.6.6 3 1.6 4C7 13 11 9.5 16 8c-4 2.5-7 6-8.3 11.2C9 20 10.4 20.5 12 20.5c5 0 8-5 8-16.5z" />
+            </svg>
+          </div>
+          <div>
+            <strong>Sustainable Growth</strong>
+            <span>A stronger tomorrow</span>
+          </div>
+        </div>
+
+      </div>
     </div>
   )
 }

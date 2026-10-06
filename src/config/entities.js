@@ -8,7 +8,7 @@ export const entities = {
     endpoint: 'departments',
     idField: 'deptCode',
     columns: [
-      { key: 'deptCode', label: 'Dept Code', editableOnCreateOnly: true },
+      { key: 'deptCode', label: 'Dept Code', editableOnCreateOnly: true, placeholder: 'Enter dept code, e.g. PRD01' },
       { key: 'deptName', label: 'Dept Name' }
     ]
   },

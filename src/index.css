@@ -1017,7 +1017,7 @@ th, td {
 @media (max-width: 520px)  { .emp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 .emp-card {
-  background: #fff; border: 1px solid #000000; border-radius: 4px;
+  background: #fff; border: 1px solid #005eb8; border-radius: 4px;
   padding: 14px 10px 12px; text-align: center;
   display: flex; flex-direction: column; align-items: center; gap: 3px;
 }
@@ -2801,6 +2801,9 @@ html, body, #root { margin: 0; padding: 0; width: 100%; height: 100%; }
 .login-panel::before, .login-panel::after { display: none !important; }
 
 .login-box {
+  margin-left: 210px;
+}
+.login-box {
   pointer-events: auto;
   position: relative !important;
   width: 100% !important;
@@ -2893,4 +2896,158 @@ html, body, #root { margin: 0; padding: 0; width: 100%; height: 100%; }
 @media (max-width: 700px) {
   .login-values { display: none !important; }
   .login-panel { bottom: 0 !important; align-items: center !important; }
+}
+.tagline {
+  position: absolute;
+  left: 40px;
+  bottom: 24px;
+  padding: 14px 22px;
+  background: rgba(6, 24, 60, .65);
+  border-left: 4px solid #35c8ff;
+  border-radius: 8px;
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 17px;
+  line-height: 1.5;
+}
+.tagline strong { display: block; font-size: 19px; }
+.tagline span { color: #bee6ff; }
+
+/* Soft dark-blue fade on the left so the text stands out */
+.hero-left::before {
+  content: "";
+  position: absolute;
+  inset: 0 40% 0 0;
+  background: linear-gradient(90deg, rgba(5, 25, 70, .78) 0%, rgba(5, 25, 70, .45) 60%, transparent 100%);
+  z-index: -1;
+}
+
+/* Line 1 stays white */
+.hero-title {
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 20, 60, .6);
+}
+
+/* "Driving Excellence." in bright blue */
+.hero-title .accent {
+  color: #35c8ff;
+  text-shadow: 0 2px 12px rgba(0, 30, 90, .7);
+}
+
+/* Track Competencies line */
+.hero-tags {
+  color: #eaf6ff;
+  font-weight: 500;
+  text-shadow: 0 1px 6px rgba(0, 20, 60, .8);
+}
+.hero-tags .dot { color: #35c8ff; }
+
+.login-hero { position: relative; }          /* needed for the tagline position */
+.hero-content, .hero-top { position: relative; z-index: 2; }
+
+/* Soft dark-blue fade so the left text is clear */
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(5,25,70,.78) 0%, rgba(5,25,70,.45) 55%, transparent 100%);
+}
+
+.hero-title { color: #fff; text-shadow: 0 2px 10px rgba(0,20,60,.6); }
+.hero-title .accent { color: #35c8ff; text-shadow: 0 2px 12px rgba(0,30,90,.7); }
+
+.hero-tags { color: #eaf6ff; font-weight: 500; text-shadow: 0 1px 6px rgba(0,20,60,.8); }
+.hero-tags .dot { color: #35c8ff; }
+
+.tagline {
+  position: absolute; left: 40px; bottom: 24px; z-index: 2;
+  padding: 14px 22px;
+  background: rgba(6,24,60,.65);
+  border-left: 4px solid #35c8ff;
+  border-radius: 8px;
+  backdrop-filter: blur(6px);
+  color: #fff; line-height: 1.5;
+}
+.tagline strong { display: block; font-size: 19px; }
+.tagline span { color: #bee6ff; font-size: 17px; }
+
+/* Hero text colours - override ".login-hero * { color:#fff !important }" */
+.login-hero .hero-title .accent {
+  color: #35c8ff !important;
+  text-shadow: 0 2px 12px rgba(0, 30, 90, .7);
+}
+
+.login-hero .hero-tags {
+  color: #eaf6ff !important;
+}
+
+.login-hero .hero-tags .dot {
+  color: #35c8ff !important;
+}
+
+.login-hero .tagline span {
+  color: #bee6ff !important;
+}
+
+/* =========================================================
+   VALUES BOX - bottom right (dark glass card, 2 x 2)
+   ========================================================= */
+.login-values {
+  position: absolute !important;
+  right: 11px !important;
+  bottom: 4px !important;
+  left: auto !important;
+  width: 465px !important;
+  max-width: calc(100vw - 56px) !important;
+  z-index: 25 !important;
+
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 20px 24px !important;
+  padding: 18px 22px !important;
+
+  background: rgba(14, 36, 78, 0.82) !important;
+  border: 2px solid rgba(255, 255, 255, 0.85) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px rgba(0, 20, 60, 0.4) !important;
+  backdrop-filter: blur(8px);
+}
+
+.login-values .value-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 0 !important;
+}
+
+.login-values .value-icon {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+}
+.login-values .value-icon svg { color: #0b6fd0 !important; }
+.login-values .value-item:nth-child(4) .value-icon svg { color: #3aa573 !important; }
+
+.login-values .value-item strong {
+  display: block !important;
+  color: #fff !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: .02em;
+  white-space: nowrap !important;
+}
+.login-values .value-item span {
+  display: block !important;
+  margin-top: 2px !important;
+  color: #b9cde4 !important;
+  font-size: 11.5px !important;
+  white-space: nowrap !important;
+}
+
+/* not enough room beside the login card on smaller screens */
+@media (max-width: 1350px) {
+  .login-values { display: none !important; }
 }
