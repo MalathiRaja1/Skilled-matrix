@@ -109,7 +109,7 @@ export default function Login() {
         </div>
 
         {/* ================= BOTTOM VALUES ================= */}
-        {/* <div className="login-values">
+        <div className="login-values">
 
           <div className="value-item">
             <div className="value-icon">👥</div>
@@ -149,7 +149,7 @@ export default function Login() {
             </div>
           </div>
 
-        </div> */}
+        </div>
 
       </section>
 
