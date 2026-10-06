@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import { useState } from 'react'
 
 const abs = (u) => (u ? new URL(u, window.location.origin).href : '')
 
@@ -8,14 +9,19 @@ const abs = (u) => (u ? new URL(u, window.location.origin).href : '')
 const toDataUrl = async (url) => {
   if (!url) return null
   try {
-    const blob = await (await fetch(abs(url))).blob()
-    return await new Promise((res) => {
+    // no-store: the browser may have cached these photos earlier (from the grid's <img>)
+    // without CORS headers, and would reuse that copy and fail the export
+    const res = await fetch(abs(url), { mode: 'cors', cache: 'no-store' })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const blob = await res.blob()
+    return await new Promise((resolve) => {
       const r = new FileReader()
-      r.onload = () => res(r.result)
-      r.onerror = () => res(null)
+      r.onload = () => resolve(r.result)
+      r.onerror = () => resolve(null)
       r.readAsDataURL(blob)
     })
-  } catch {
+  } catch (err) {
+    console.warn('Photo not exported:', url, err)
     return null
   }
 }
@@ -37,7 +43,11 @@ const withPhotos = async (columns, rows) => {
 const ico = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }
 
 export default function ExportBar({ title, columns, rows }) {
-  const exportExcel = async () => {
+const [busy, setBusy] = useState(false)
+ const exportExcel = async () => {
+  if (busy) return
+  setBusy(true)
+  try {
     const { photoKeys, images } = await withPhotos(columns, rows)
     const wb = new ExcelJS.Workbook()
     const ws = wb.addWorksheet(title.slice(0, 31))
@@ -72,7 +82,13 @@ export default function ExportBar({ title, columns, rows }) {
     a.download = `${title}.xlsx`
     a.click()
     URL.revokeObjectURL(a.href)
+  } catch (err) {
+    console.error('Excel export failed:', err)
+    alert('Excel export failed: ' + (err?.message || err))
+  } finally {
+    setBusy(false)
   }
+}
 
   const exportPdf = async () => {
     const { photoKeys, images } = await withPhotos(columns, rows)
@@ -126,9 +142,16 @@ export default function ExportBar({ title, columns, rows }) {
 
   return (
     <div className="export-bar">
-      <button type="button" className="export-btn excel" title="Export to Excel" onClick={exportExcel}>
-        <svg {...ico}><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M8 8l8 8M16 8l-8 8" /></svg>
-      </button>
+    <button
+  type="button"
+  className="export-btn excel"
+  title={busy ? 'Exporting…' : 'Export to Excel'}
+  onClick={exportExcel}
+  disabled={busy}
+  style={busy ? { opacity: 0.6, cursor: 'wait' } : undefined}
+>
+  <svg {...ico}><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M8 8l8 8M16 8l-8 8" /></svg>
+</button>
       <button type="button" className="export-btn pdf" title="Export to PDF" onClick={exportPdf}>
         <svg {...ico}><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" /><path d="M14 3v5h5M9 14h6M9 17h4" /></svg>
       </button>

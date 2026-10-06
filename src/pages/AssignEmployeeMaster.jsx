@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import api from '../api/client'
 import { confirmEditPassword, deleteWithPassword, errorMessage } from '../api/helpers'
-import StageCell from '../components/StageCell'
 import ExportBar from '../components/ExportBar'
 import Loader from '../components/Loader'
+import Toast from '../components/Toast'
+import Pagination from '../components/Pagination'
 
+const PAGE_SIZE = 10
 const today = () => {
   const d = new Date()
   const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -13,6 +15,33 @@ const today = () => {
 }
 const toInput = (v) => (v ? String(v).slice(0, 10) : '')
 const toApi = (v) => (v ? `${v}T00:00:00Z` : null)
+const fmt = (v) => (v ? String(v).slice(0, 10).split('-').reverse().join('-') : '')
+
+const STAGE_LABEL = {
+  t: 'Training plan',
+  u: 'Under training',
+  a: 'Authorised',
+  c: 'Competent'
+}
+
+// Grid chip: "T (Training plan)" + dates underneath
+function StageChip({ stage, checked, start, end }) {
+  if (!checked) return <span className="stage-empty">—</span>
+  let sub = ''
+  if (stage === 't' || stage === 'u') sub = `${fmt(start)} → ${fmt(end)}`
+  else if (stage === 'a') sub = `from ${fmt(start)}`
+  else sub = 'Approved'
+  return (
+    <span className={`stage-chip stage-${stage}`}>
+      <strong>{stage.toUpperCase()} ({STAGE_LABEL[stage]})</strong>
+      <small>{sub}</small>
+    </span>
+  )
+}
+
+
+
+
 
 const blank = {
   empId: '', areaCode: '', workStationCode: '',
@@ -46,6 +75,16 @@ export default function AssignEmployeeMaster() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
+    const [page, setPage] = useState(1)
+  const pageRows = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+  // if the last row of a page is deleted, step back one page
+
+    useEffect(() => {
+    const last = Math.max(1, Math.ceil(rows.length / PAGE_SIZE))
+    if (page > last) setPage(last)
+  }, [rows.length, page])
+
   const loadRows = () => {
     setLoading(true)
     api.get('/assignemployees')
@@ -76,6 +115,7 @@ export default function AssignEmployeeMaster() {
   const reset = () => {
     setEditingId(null)
     setForm(blank)
+    setError('')
   }
 
   // Edit is password-locked: ask first, only load the row into the form if it checks out.
@@ -144,46 +184,60 @@ export default function AssignEmployeeMaster() {
   }
 
   return (
-    <div className="page">
-      <h1>Assign Employee Master</h1>
+    <div className="master-form-card">
+      <div className="master-form-title">Assign Employee Master</div>
 
-      <form className="card" onSubmit={submit}>
-        <div className="form-grid">
-          <label>
-            Employee<span className="required-star">*</span>
-            <select value={form.empId} onChange={(e) => change({ empId: e.target.value })}>
-              <option value="">-- Select --</option>
-              {employees.map((e) => (
-                <option key={e.empId} value={e.empId}>{e.empId} — {e.empName}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Area<span className="required-star">*</span>
-            <select
-              value={form.areaCode}
-              onChange={(e) => change({ areaCode: e.target.value, workStationCode: '' })}
-            >
-              <option value="">-- Select --</option>
-              {areas.map((a) => (
-                <option key={a.areaCode} value={a.areaCode}>{a.areaCode} — {a.areaName}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Work Station<span className="required-star">*</span>
-            <select
-              value={form.workStationCode}
-              onChange={(e) => change({ workStationCode: e.target.value })}
-            >
-              <option value="">-- Select --</option>
-              {stationOptions.map((w) => (
-                <option key={w.workStationCode} value={w.workStationCode}>
-                  {w.workStationCode} — {w.workStationName}
-                </option>
-              ))}
-            </select>
-          </label>
+      <form className="master-form" onSubmit={submit}>
+        <div className="master-fields">
+          <div className="master-field">
+            <label className="master-field-label">
+              Employee<span className="required-star">*</span>
+            </label>
+            <div className="master-field-control">
+              <select value={form.empId} onChange={(e) => change({ empId: e.target.value })}>
+                <option value="">-- Select --</option>
+                {employees.map((e) => (
+                  <option key={e.empId} value={e.empId}>{e.empId} — {e.empName}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="master-field">
+            <label className="master-field-label">
+              Area<span className="required-star">*</span>
+            </label>
+            <div className="master-field-control">
+              <select
+                value={form.areaCode}
+                onChange={(e) => change({ areaCode: e.target.value, workStationCode: '' })}
+              >
+                <option value="">-- Select --</option>
+                {areas.map((a) => (
+                  <option key={a.areaCode} value={a.areaCode}>{a.areaCode} — {a.areaName}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="master-field">
+            <label className="master-field-label">
+              Work Station<span className="required-star">*</span>
+            </label>
+            <div className="master-field-control">
+              <select
+                value={form.workStationCode}
+                onChange={(e) => change({ workStationCode: e.target.value })}
+              >
+                <option value="">-- Select --</option>
+                {stationOptions.map((w) => (
+                  <option key={w.workStationCode} value={w.workStationCode}>
+                    {w.workStationCode} — {w.workStationName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
 
         <div className="stage-row">
@@ -271,11 +325,16 @@ export default function AssignEmployeeMaster() {
           </div>
         </div>
 
-        <div className="form-actions" style={{ marginTop: 16 }}>
-          <button type="submit">{editingId !== null ? 'Update' : 'Add'}</button>
-          {editingId !== null && <button type="button" onClick={reset}>Cancel</button>}
+        <div className="master-form-actions">
+          <button type="submit" className="master-save-btn">
+            {editingId !== null ? 'Update' : 'Save'} ✓
+          </button>
+          <button type="button" className="master-clear-btn" onClick={reset}>
+            Clear ↻
+          </button>
         </div>
-        {error && <p className="error" style={{ marginTop: 10 }}>{error}</p>}
+
+        <Toast message={error} onClose={() => setError('')} />
       </form>
 
       <ExportBar
@@ -287,7 +346,7 @@ export default function AssignEmployeeMaster() {
           { key: 't', label: 'T (Training plan)' },
           { key: 'u', label: 'U (Under training)' },
           { key: 'a', label: 'A (Authorised)' },
-          { key: 'c', label: 'C (Competent to train others)' }
+          { key: 'c', label: 'C (Competent)' }
         ]}
         rows={rows.map((r) => ({
           emp: `${r.empId} — ${r.employee?.empName ?? ''}`,
@@ -306,31 +365,48 @@ export default function AssignEmployeeMaster() {
         ) : rows.length === 0 ? (
           <p>No assignments yet — add the first one above.</p>
         ) : (
+          <>
           <table>
             <thead>
               <tr>
-                <th>Employee</th><th>Area</th><th>Work Station</th>
-                <th>T</th><th>U</th><th>A</th><th>C</th><th></th>
+         <th>Employee</th><th>Area</th><th>Work Station</th>
+<th>T (Training plan)</th>
+<th>U (Under training)</th>
+<th>A (Authorised)</th>
+<th>C (Competent To Trained Others)</th>
+<th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => (
+              {pageRows.map((r) => (
                 <tr key={r.id}>
                   <td>{r.empId} — {r.employee?.empName}</td>
                   <td>{r.area?.areaName ?? r.areaCode}</td>
                   <td>{r.workStation?.workStationName ?? r.workStationCode}</td>
-                  <td><StageCell stage="t" checked={r.t} start={r.tStartDate} end={r.tEndDate} /></td>
-                  <td><StageCell stage="u" checked={r.u} start={r.uStartDate} end={r.uEndDate} /></td>
-                  <td><StageCell stage="a" checked={r.a} start={r.aStartDate} /></td>
-                  <td><StageCell stage="c" checked={r.c} /></td>
-                  <td className="row-actions">
-                    <button onClick={() => tryEdit(r)}>Edit</button>
-                    <button onClick={() => remove(r.id)}>Delete</button>
+                  <td><StageChip stage="t" checked={r.t} start={r.tStartDate} end={r.tEndDate} /></td>
+                  <td><StageChip stage="u" checked={r.u} start={r.uStartDate} end={r.uEndDate} /></td>
+                  <td><StageChip stage="a" checked={r.a} start={r.aStartDate} /></td>
+                  <td><StageChip stage="c" checked={r.c} /></td>
+                  <td>
+                    <div className="row-actions">
+                      <button type="button" className="icon-btn edit" title="Edit" onClick={() => tryEdit(r)}>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                        </svg>
+                      </button>
+                      <button type="button" className="icon-btn delete" title="Delete" onClick={() => remove(r.id)}>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M3 6h18" /><path d="M8 6V4h8v2" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6M14 11v6" />
+                        </svg>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <Pagination page={page} total={rows.length} pageSize={PAGE_SIZE} onChange={setPage} />
+             </>
         )}
       </div>
     </div>

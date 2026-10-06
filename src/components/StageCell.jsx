@@ -1,5 +1,12 @@
 export const fmtDate = (v) => (v ? String(v).slice(0, 10).split('-').reverse().join('-') : '')
 
+export const STAGE_LABEL = {
+  t: 'Training plan',
+  u: 'Under training',
+  a: 'Authorised',
+  c: 'Competent'
+}
+
 // Coloured chip for one stage (T / U / A / C) of an assignment row.
 export default function StageCell({ stage, checked, start, end }) {
   if (!checked) return <span className="stage-empty">—</span>
@@ -11,7 +18,7 @@ export default function StageCell({ stage, checked, start, end }) {
 
   return (
     <span className={`stage-chip stage-${stage}`}>
-      <strong>{stage.toUpperCase()}</strong>
+      <strong>{stage.toUpperCase()} ({STAGE_LABEL[stage]})</strong>
       {text && <small>{text}</small>}
     </span>
   )

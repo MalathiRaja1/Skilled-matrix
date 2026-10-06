@@ -63,7 +63,7 @@ export default function Report() {
             <thead>
               <tr>
                 <th>Emp ID</th><th>Emp Name</th><th>Area</th><th>Work Station</th>
-                <th>T</th><th>U</th><th>A</th><th>C</th>
+                <th>T (Training plan)</th><th>U (Under training)</th><th>A (Authorised)</th><th>C (Competent To Trained Others)</th>
               </tr>
             </thead>
             <tbody>
