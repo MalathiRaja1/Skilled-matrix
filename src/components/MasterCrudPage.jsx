@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import api from '../api/client'
 import { confirmEditPassword, deleteWithPassword, errorMessage, shrinkImage } from '../api/helpers'
 import ExportBar from './ExportBar'
@@ -59,7 +59,30 @@ export default function MasterCrudPage({ config }) {
   const [uploading, setUploading] = useState({}) // column key -> bool
   const [options, setOptions] = useState({}) // column key -> [{value, label}] for dropdown fields
 const [page, setPage] = useState(1)
-const pageRows = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+//const pageRows = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+const [search, setSearch] = useState('')
+const [deptFilter, setDeptFilter] = useState('ALL')
+
+const deptCol = columns.find(
+  (c) => c.type === 'select' && (c.optionsEndpoint === 'departments' || c.key === 'deptCode')
+)
+
+
+const filtered = useMemo(() => {
+  const q = search.trim().toLowerCase()
+  return rows.filter((row) => {
+    if (deptCol && deptFilter !== 'ALL' && String(row[deptCol.key]) !== deptFilter) return false
+    if (!q) return true
+    return columns
+      .filter((c) => c.type !== 'photo' && c.type !== 'checkbox')
+      .some((c) => String(cellText(c, row)).toLowerCase().includes(q))
+  })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [rows, search, deptFilter])
+
+const pageRows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+useEffect(() => { setPage(1) }, [search, deptFilter])
 
   useEffect(() => {
     columns
@@ -104,9 +127,9 @@ const pageRows = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
     setError('')
   }
 useEffect(() => {
-  const last = Math.max(1, Math.ceil(rows.length / PAGE_SIZE))
+  const last = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   if (page > last) setPage(last)
-}, [rows.length, page])
+}, [filtered.length, page])
 
 
   // Edit is password-locked: ask first, only load the row into the form if it checks out.
@@ -205,8 +228,7 @@ useEffect(() => {
       setUploading((u) => ({ ...u, [key]: false }))
     }
   }
-
-const exportRows = rows.map((row) =>
+const exportRows = filtered.map((row) =>
   Object.fromEntries(
     columns.map((c) => [c.key, c.type === 'photo' ? row[c.key] || '' : cellText(c, row)])
   )
@@ -385,7 +407,27 @@ if (c.type === 'phone') {
 
 
     {/* BUTTONS */}
+
     <div className="master-form-actions">
+
+  <button type="submit" className="master-save-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+      <path d="M17 21v-8H7v8M7 3v5h8" />
+    </svg>
+    {editingId !== null ? 'Update' : 'Save'}
+  </button>
+
+  <button type="button" className="master-clear-btn" onClick={cancelEdit}>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 20H9l-5-5 10-10 6 6-7 7" />
+      <path d="M9 20l-5-5" />
+    </svg>
+    Clear
+  </button>
+
+</div>
+    {/* <div className="master-form-actions">
 
       <button
         type="submit"
@@ -405,7 +447,7 @@ if (c.type === 'phone') {
         Clear ↻
       </button>
 
-    </div>
+    </div> */}
 
 
     {/* ERROR */}
@@ -413,13 +455,44 @@ if (c.type === 'phone') {
 
   </form>
 
-      <ExportBar title={title} columns={columns} rows={exportRows} />
+      <ExportBar
+  title={deptCol && deptFilter !== 'ALL' ? `${title} - ${deptFilter}` : title}
+  columns={columns}
+  rows={exportRows}
+/>
+
+      <div className="grid-toolbar">
+  <div className="grid-search">
+    <input
+      type="text"
+      placeholder="Search…"
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+    />
+    {search && (
+      <button type="button" className="grid-search-clear" onClick={() => setSearch('')}>×</button>
+    )}
+  </div>
+
+  {deptCol && (
+    <select value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)}>
+      <option value="ALL">All departments</option>
+      {(options[deptCol.key] || []).map((o) => (
+        <option key={o.value} value={o.value}>{o.label}</option>
+      ))}
+    </select>
+  )}
+
+  <span className="grid-count">{filtered.length} of {rows.length} records</span>
+</div>
 
         <div className="card table-wrap">
-        {loading ? (
-          <Loader />
-        ) : rows.length === 0 ? (
-          <p>No records yet — add the first one above.</p>
+       {loading ? (
+  <Loader />
+) : rows.length === 0 ? (
+  <p>No records yet — add the first one above.</p>
+) : filtered.length === 0 ? (
+  <p>No records match your search.</p>
         ) : (
           <>
             <table>
@@ -462,7 +535,7 @@ if (c.type === 'phone') {
               </tbody>
             </table>
 
-            <Pagination page={page} total={rows.length} pageSize={PAGE_SIZE} onChange={setPage} />
+  <Pagination page={page} total={filtered.length} pageSize={PAGE_SIZE} onChange={setPage} />
           </>
         )}
       </div>
