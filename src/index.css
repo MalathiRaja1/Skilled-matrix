@@ -3343,14 +3343,7 @@ html, body, #root { margin: 0; padding: 0; width: 100%; height: 100%; }
   .kpi-row  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-.master-field {
-  grid-template-columns: 100px minmax(0, 1fr);
-  gap: 6px;
-}
 
-.master-field-label {
-  min-width: 0;
-}
 
 .sidebar .logout {
   align-self: flex-start;
